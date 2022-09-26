@@ -287,15 +287,79 @@
 
 <!--Anymal locomotion on challenging terrains-->
 <section id="anymal-locomotion" class="center">
-    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy<a class="org-ref-reference" href="#slide-bibliography">[Lee2020]</a></h4>
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain<a class="org-ref-reference" href="#slide-bibliography">[Lee2020]</a></h4>
     <ul>
-        <li>Privileged learning: 
-            <ul>
-                <li>teacher policy: access to ground-truth knowledge</li>
-                <li>student policy: only uses sensors avaliable on the real robot; </li>
-            </ul>
+        <li>Goal: follow a command (direction) and locomote over rough terrain with only proprioceptive measurements (joint encoders and an IMU).
         </li>
-        <li></li>
+        <li>Challenge: the robustness of the controller.</li>
+    </ul>
+</section>
+<section id="anymal-locomotion-policy-teacher" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
+    <div class="leftcol">
+        <ul style="font-size:35px;">
+            <li>Privileged learning</li>
+            <li>teacher policy (access to ground-truth knowledge)
+                <ul>
+                    <li>state $s_t=(o_t, x_t)$</li>
+                    <li>$o_t$ inclues command, orientation, base twist, joint positions and velocities, periodic phase $\phi_i$, frequency offset $f_i$ of each leg, previous foot position targets, joint position errors and velocities at $t-0.01$ aand $t-0.02$ s.</li>
+                    <li>$x_t$ contains noiseless information from the physics engine, mainly related to foot-ground interactions, such as terrain profile (9 points placed along a 10-cm radius circle), foot contact state and forces, friction coefficients, external disturbance forces.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="r-stack">
+        <img src="./figures/anymal_loco_architecture.png">
+    </div>
+</section>
+<section id="anymal-locomotion-policy-teacher2" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
+    <div class="leftcol">
+        <ul style="font-size:35px;">
+            <li>Privileged learning</li>
+            <li>teacher policy (access to ground-truth knowledge)
+                <ul>
+                    <li>action: 16-dim vector (leg frequencies and foot position residuals)</li>
+                    <li>architecture: MLP encoder with input $x_t$ and MLP for computing action</li>
+                    <li>Learning algorithm: TRPO</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="r-stack">
+        <img src="./figures/anymal_loco_architecture.png">
+    </div>
+</section>
+<section id="anymal-locomotion-policy-student" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
+    <div class="leftcol">
+        <ul style="font-size:35px;">
+            <li>Privileged learning</li>
+            <li>student policy (only uses sensors avaliable on the real robot; imitates the teacher)
+                <ul>
+                    <li>state $s_t=(o_t)$</li>
+                    <li>architecture: a temporal convolutional network (TCN) encoder and an MLP for computing action</li>
+                    <li>Learning algorithm: supervised learning with a loss function
+                        $$
+                            \begin{aligned}
+                            L=&(\bar a_t(o_t, x_t)-a_t(o_t, H))^2+\\
+                            &(\bar l_t(o_t,x_t)-l_t(H))^2,
+                            \end{aligned}
+                        $$
+                        where $H=\{h_{t-1},\cdots,h_{t-N-1}\}$ and $h_t=o_t\setminus\{f_o, \textrm{joint history, previous foot position targets}\}$ is a time series of proprioceptive observations.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="r-stack">
+        <img src="./figures/anymal_loco_architecture.png">
+    </div>
+</section>
+<section id="anymal-locomotion" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: policy</h4>
+    <ul>
+        <li>Adaptive terrain curriculum</li>
     </ul>
 </section>
 <section id="anymal-locomotion" class="center">
@@ -313,7 +377,7 @@
 <section id="anymal-locomotion" class="center">
     <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Deployment</h4>
     <ul>
-        <li>Goal:</li>
+        <li>Training environment features only rigid terrain, while the controller successfully meet the dversity of field conditions.</li>
     </ul>
 </section>
 <section id="anymal-locomotion" class="center">
