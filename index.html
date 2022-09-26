@@ -102,7 +102,7 @@
     </div> -->
 </section>
 <!--Anymal-->
-<section id="slide-anymal" class="center">
+<section id="slide-anymal-traditional" class="center">
 	<h3 id="h3_anymal" hidden>Case study: Anymal</h3>
 	<h4 id="h4_anymal">Qradruped Robot: Traditional Controller Design</h4>
     <div>
@@ -185,7 +185,7 @@
 						<li>previous action; command $C$.</li>
 					</ul>
                     <li>output: joint position target (why not torques or velocities?)</li>
-                    <li>architecture: an MLP with two hidden layers, with 256 and 128 units each and tanh nonlinearity</li>
+                    <li>architecture: an MLP with two hidden layers, with 256 and 128 units each and tanh nonlinearity (bounded activation functions yield less aggressive trajectories for real robots when subjected disturbances)</li>
             </li>
         </ul>
     </div>
@@ -221,21 +221,62 @@
 	</div>
 	
 </section>
-<section id="slide-anymal-train" class="center">
-	<h4 id="h4_anymal">Anymal: Control and State Estimation of Motors</h4>
+<section id="slide-anymal-train-curriculum" class="center">
+	<h4 id="h4_anymal">Anymal: Training</h4>
     <div class="leftcol" style="margin-top: 0%;">
         <ul style="font-size:35px;">
-            <li>Training:<br>
-                curriculum; uniformly distributed noise injection; 
-            </li>
             <li>Learning algorithm: Trust Region Policy Optimization.
             </li>
-            <li>Deployment:
+            <li>Curriculum: avoid trapping in a local minimum of penalty on joint torque and velocity<br>
                 <ul>
-                    <li>Inference takes 25$\mu$s on a single CPU thread, about 0.01% of the available onboard computational resources.</li>
+                    <li>all of cost terms except those related to the objective (base velocity error cost etc.) are multiplied by a curriculum factor $k_c$, where $k_{c, j+1}\leftarrow (k_{c, j})^{k_d}$ and $k_0, k_d\in (0, 1)$ are selected to prevent the initial tendency to stand still.</li>
                 </ul>
             </li>
-            <li>More info: training time - 4 hours (9 days of simulation time); the performance is insensative to the control rate (100Hz to 200Hz).
+            <li>The discount factor $\gamma$ is hand-tuned.</li>
+            <li>Joint velocities, base velocities: uniformly distributed noise injection</li>
+            <li>Training time: 9 days of simulated time for command-conditioned locomotion; 79 days for recovery from a fall.</li>
+        </ul>
+    </div>
+    <div class="leftcol" style="margin-top: 0%;">
+        <img src="./figures/anymal_motor.png">
+    </div>
+</section>
+<section id="slide-anymal-reward" class="center">
+    <h4 id="h4_anymal">Anymal: Reward Setting</h4>
+    <div>
+        <ul style="font-size:30px;">
+            <li>angular velocity and linear velocity of the base cost
+                $$
+                    c_wK(|\omega_{IB}^I-\hat\omega_{IB}^I|), c_w=-6\Delta t
+                $$
+            </li>
+            <li>torque cost, joint speed cost
+                $$
+                    k_cc_\tau\|\tau\|^2, c_\tau=0.005\Delta t
+                $$
+            </li>
+            <li>foot clearance cost and foot slip cost</li>
+            <li>orientation cost</li>
+            <li>smoothness cost
+                $$
+                    k_cc_s\|\tau_{t-1}-\tau_t\|^2
+                $$
+            </li>
+            <li>$K:\mathbb{R}\rightarrow [-0.25, 0)$
+                $$
+                   K(x)=-\frac{1}{e^x+e^{-x}+2}
+                $$
+            </li>
+        </ul>
+    </div>
+</section>
+<section id="slide-anymal-deployment" class="center">
+	<h4 id="h4_anymal">Anymal: Deployment</h4>
+    <div class="leftcol" style="margin-top: 0%;">
+        <ul style="font-size:35px;">
+            <li>Inference takes 25$\mu$s on a single CPU thread, less than 0.25% of the available onboard computational resources.</li>
+            <li>The policy network is evaluated at 200Hz for command-conditioned locomotion and at 100 Hz for recovery from a fall.</li>
+            <li>The performance is insensative to the control rate: performance is identical for recovery when the control rate increases from 20 Hz to 100 Hz. (Possibly due to the low joint velocities mostly below 6 rad/s)
             </li>
         </ul>
     </div>
@@ -244,6 +285,22 @@
     </div>
 </section>
 
+<!--Anymal locomotion on challenging terrains-->
+<section id="anymal-locomotion" class="center">
+    <h4 id="h4_anymal">Anymal: Learning Locomotion over Challenging Terrain<a class="org-ref-reference" href="#slide-bibliography">[Lee2020]</a></h4>
+    <ul>
+        <li>Goal:</li>
+    </ul>
+</section>
+<section id="anymal-locomotion" class="center">
+    
+</section>
+<section id="anymal-locomotion" class="center">
+    
+</section>
+<section id="anymal-locomotion" class="center">
+    
+</section>
 <!--Cassie-->
 
 <!--Conclusion-->
@@ -269,6 +326,7 @@
 	<ul class='org-ref-bib'>
 		<li><a id="Zhao2020">[Zhao2020]</a> <a name="Zhao2020"></a>Zhao, Wenshuai, Jorge Peña Queralta, and Tomi Westerlund. "Sim-to-real transfer in deep reinforcement learning for robotics: a survey." 2020 IEEE Symposium Series on Computational Intelligence (SSCI). IEEE, 2020.</li>
 		<li><a id="Peng2017">[Peng2017]</a> <a name="Peng2017"></a>Peng, Xue Bin, and Michiel van de Panne. "Learning locomotion skills using deeprl: Does the choice of action space matter?." Proceedings of the ACM SIGGRAPH/Eurographics Symposium on Computer Animation. 2017.</li>
+        <li><a id="Lee2020">[Lee2020]</a> <a name="Lee2020"></a>Lee, Joonho, et al. "Learning quadrupedal locomotion over challenging terrain." Science robotics 5.47 (2020): eabc5986</li>
 	</ul>
 	<div class="slide-footer"><br></div>
 </section>
