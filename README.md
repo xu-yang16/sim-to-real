@@ -1,3 +1,3 @@
-# slides for gzz of CCC2021, 2021/7/30
+# slides for group meeting, 2022/9/28
 
 ## This slide is made with reveal.js.
