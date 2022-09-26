@@ -356,8 +356,8 @@
         <img src="./figures/anymal_loco_architecture.png">
     </div>
 </section>
-<section id="anymal-locomotion" class="center">
-    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: policy</h4>
+<section id="anymal-locomotion-curriculum" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
     <ul>
         <li>Adaptive terrain curriculum</li>
     </ul>
@@ -384,7 +384,47 @@
     
 </section>
 <!--Cassie-->
+<section id="cassie-traditional" class="center">
+    <h4>Bipedal Locomotion: Traditional Controller Design</h4>
 
+</section>
+<section id="cassie-gait-learning" class="center">
+    <h4>Cassie: Bipedal Gait Learning</h4>
+    <ul>
+        <li>Goal: learn all common gaits.</li>
+        <li>Challenge: the reward function is hard to design
+            <ul>
+                <li>track trajectory motion: deriving feasible reference trajectories is hard</li>
+                <li>reference-free reward: inefficient, infeasible or unsafe policies.</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+<section id="cassie-periodic-gait" class="center">
+    <h4>Cassie: Bipedal Gait Learning</h4>
+    <ul style="font-size:35px;">
+        <li>Gait: a sequence of periodic swing phases and stance phases.</li>
+        <li>Reward: biased sum of $n$ reward components
+            $$
+                \begin{aligned}
+                    R(s,\phi)&=\beta+\sum_i R_i(s, \phi)\\
+                    R_i(s,\phi)&=c_i\cdot I_i(\phi)\cdot q_i(s),
+                \end{aligned}
+            $$
+            where $\phi\in[0, 1]$ denotes the cycle time; $I_i(\phi)$ is a binary-valued random variable denoting whether the target phase is active; $q_i(s)$ is the reward (e.g. norm of a foot force)
+        </li>
+        <li>$$
+                P(I_i(\phi)=x)=\left\{
+                    \begin{aligned}
+                        &P(A_i<\phi< B_i) \quad \textrm{if}\ x=1 \\
+                        &1-P(A_i<\phi< B_i) \quad \textrm{if}\ x=0 \\
+                    \end{aligned}
+                    \right.
+            $$
+            where $A_i\sim \Phi(2\pi a_i,\kappa), B_i\sim\Phi(2\pi b_i,\kappa)$ and $\Phi$ is the Von Mises distribution (approximation of the wrapped Normal distribution).
+        </li>
+    </ul>
+</section>
 <!--Conclusion-->
 <section id="slide-conclusion" class="center">
 	<h2 id="h2_conclusion" hidden>Conclusion</h2>
