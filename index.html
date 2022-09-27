@@ -402,27 +402,100 @@
 </section>
 <section id="cassie-periodic-gait" class="center">
     <h4>Cassie: Bipedal Gait Learning</h4>
-    <ul style="font-size:35px;">
-        <li>Gait: a sequence of periodic swing phases and stance phases.</li>
-        <li>Reward: biased sum of $n$ reward components
-            $$
-                \begin{aligned}
-                    R(s,\phi)&=\beta+\sum_i R_i(s, \phi)\\
-                    R_i(s,\phi)&=c_i\cdot I_i(\phi)\cdot q_i(s),
-                \end{aligned}
-            $$
-            where $\phi\in[0, 1]$ denotes the cycle time; $I_i(\phi)$ is a binary-valued random variable denoting whether the target phase is active; $q_i(s)$ is the reward (e.g. norm of a foot force)
-        </li>
-        <li>$$
-                P(I_i(\phi)=x)=\left\{
+    <div class="leftcol">
+        <ul style="font-size:30px;">
+            <li>Gait: a sequence of periodic swing phases and stance phases.</li>
+            <li>Bahavior reward: biased sum of $n$ reward components
+                $$
                     \begin{aligned}
-                        &P(A_i<\phi< B_i) \quad \textrm{if}\ x=1 \\
-                        &1-P(A_i<\phi< B_i) \quad \textrm{if}\ x=0 \\
+                        R(s,\phi)&=\sum_i R_i(s, \phi)\\
+                        R_i(s,\phi)&=c_i\cdot I_i(\phi)\cdot q_i(s),
                     \end{aligned}
-                    \right.
-            $$
-            where $A_i\sim \Phi(2\pi a_i,\kappa), B_i\sim\Phi(2\pi b_i,\kappa)$ and $\Phi$ is the Von Mises distribution (approximation of the wrapped Normal distribution).
-        </li>
+                $$
+                where $\phi\in[0, 1]$ denotes the cycle time; $I_i(\phi)$ is a binary-valued random variable denoting whether the target phase is active; $q_i(s)$ is the reward (e.g. norm of a foot force)
+            </li>
+            <li>$$
+                    P(I_i(\phi)=x)=\left\{
+                        \begin{aligned}
+                            &P(A_i<\phi< B_i) \quad \textrm{if}\ x=1 \\
+                            &1-P(A_i<\phi< B_i) \quad \textrm{if}\ x=0 \\
+                        \end{aligned}
+                        \right.
+                $$
+                where $A_i\sim \Phi(2\pi a_i,\kappa), B_i\sim\Phi(2\pi b_i,\kappa)$ and $\Phi$ is the Von Mises distribution (approximation of the wrapped Normal distribution).
+            </li> 
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_gait_circle.png">
+    </div>
+</section>
+<section id="cassie-periodic-reward" class="center">
+    <h4>Cassie: Bipedal Gait Learning</h4>
+    <div class="leftcol">
+        <ul style="font-size:30px;">
+            <li>Reward coefficients:
+                $$
+                    \begin{aligned}
+                    \mathbb{E}[C_{frc}(\phi)]=&c_{swing\ frc}\cdot \mathbb{E}[I_{swing\ frc}(\phi)]+\\
+                    &c_{stance\ frc}\cdot \mathbb{E}[I_{stance\ frc}(\phi)]
+                    \end{aligned}
+                $$
+            </li>
+            <li>Reward: bipedal bahavior, smooth terms and penalization of control inputs
+                $$
+                    \mathbb{E}[R(s,\phi)]=\mathbb{E}[R_{bipedal}(s,\phi)]+R_{smooth}(s)+R_{cmd}(s)
+                $$
+                $$
+                    \begin{aligned}
+                        \mathbb{E}[R_{bipedal}(s,\phi)]&=\mathbb{E}[C_{frc}(\phi+\theta_{left})]\cdot q_{left\ frc}(s)+\cdots\\
+                        &+\mathbb{E}[C_{spd}(\phi+\theta_{left})]\cdot q_{left\ spd}(s)+\cdots,
+                    \end{aligned}
+                $$
+                where $\theta_{left}$ and $\theta_{right}$ define the phases.
+            </li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_gait_reward.png">
+    </div>
+</section>
+<section id="slide-cassie-policy" class="center">
+    <h4>Cassie: Policy</h4>
+    <div class="leftcol">
+        <ul>
+            <li>Input: 
+                <ul>
+                    <li>robot state $\hat q, \hat{\dot q}$</li>
+                    <li>desired velocity $\dot x_{desired}, \dot y_{desired}$</li>
+                    <li>phase ratios and clock inputs $r, p=\{\sin(2\pi(\phi+\theta_{left})), \sin(2\pi(\phi+\theta_{right}))\}$</li>
+                </ul>
+            </li>
+            <li>Output: 10 desired joint positions and 10 sets of PD gains</li>
+            <li>Architecture: LSTM with 2 recurrent hidden layers of size 128 each and a simple linear output projection of size 30.</li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_gait_architecture.png">
+    </div>
+</section>
+<section id="slide-cassie-train" class="center">
+    <h4>Cassie: Training</h4>
+    <div class="leftcol">
+        <ul>
+            <li>Dynamics randomization.</li>
+            <li>Learning algorithm: PPO</li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_randomization.png">
+    </div>
+</section>
+<section id="slide-cassie-deployment" class="center">
+    <h4>Cassie: Deployment</h4>
+    <ul>
+        <li>Policy evaluation (40 Hz) and PD tracking (2000 Hz).</li>
+        <li></li>
     </ul>
 </section>
 <!--Conclusion-->
