@@ -140,9 +140,9 @@
         <ul style="font-size:34px;">
             <li>Actuator network: 
                 <ul>
-                    <li>input: joint state history (including joint velocity and joint position error), which consists of the current state and 2 past states that correspond to $t-0.01$ and $t-0.02$ s.</li>
+                    <li>input: <strong><em style="color:var(--myred);">joint state history</em></strong> (including joint velocity and joint position error), which consists of the current state and 2 past states that correspond to $t-0.01$ and $t-0.02$ s.</li>
                     <li>the length of the history should be sufficiently longer than the sum of all communication delays and the mechanical responce time.</li>
-                    <li>output: joint torque</li>
+                    <li>output: <strong><em style="color:var(--myred);">joint torque</em></strong></li>
                     <li>architecture: an MLP with 3 hidden layers of 32 units each; softsign activation function (12.2 $\mu$s) instead of tanh (31.6$\mu$s).</li>
                 </ul>
             </li>
@@ -177,14 +177,14 @@
             </li>
             <li>Policy network:
                 <ul>
-                    <li>input: $(o_k=<\Phi^g, r_z, v, \omega, \Phi, \dot\Phi, \Theta, a_{k-1}, C>)$</li>
+                    <li>input: <strong><em style="color:var(--myred);">$(o_k=<\Phi^g, r_z, v, \omega, \Phi, \dot\Phi, \Theta, a_{k-1}, C>)$</em></strong></li>
 					<ul>
 						<li>Body twists $\Phi^g$ (direction of the gravity vector in the IMU frame); </li>
 						<li>height, linear and angular veclocities of the base; joint angles, velocities; </li>
 						<li>joint state history $\Theta$ sparsely sampled at $t_k-0.01$ s to $t_k-0.002$ s; (enabling contact detection, which could be replaced by force sensors)</li>
 						<li>previous action; command $C$.</li>
 					</ul>
-                    <li>output: joint position target (why not torques or velocities?)</li>
+                    <li>output: <strong><em style="color:var(--myred);">joint position target</em></strong> (why not torques or velocities?)</li>
                     <li>architecture: an MLP with two hidden layers, with 256 and 128 units each and tanh nonlinearity (bounded activation functions yield less aggressive trajectories for real robots when subjected disturbances)</li>
             </li>
         </ul>
@@ -284,6 +284,12 @@
         <img src="./figures/anymal_motor.png">
     </div>
 </section>
+<section id="slide-anymal_motor-video" class="center">
+    <video controls>
+        <source src="./videos/anymal_motor.mp4"
+                type="video/webm">
+    </video>
+</section>
 
 <!--Anymal locomotion on challenging terrains-->
 <section id="anymal-locomotion" class="center">
@@ -380,8 +386,11 @@
         <li>Training environment features only rigid terrain, while the controller successfully meet the dversity of field conditions.</li>
     </ul>
 </section>
-<section id="anymal-locomotion" class="center">
-    
+<section id="slide-anymal_locomotion-video" class="center">
+    <video controls>
+        <source src="./videos/anymal_locomotion.mp4"
+                type="video/webm">
+    </video>
 </section>
 <!--Cassie-->
 <section id="cassie-traditional" class="center">
@@ -485,6 +494,7 @@
         <ul>
             <li>Dynamics randomization.</li>
             <li>Learning algorithm: PPO</li>
+            <li>Simulator: cassie-mujoco-sim base on MuJoCo</li>
         </ul>
     </div>
     <div class="rightcol">
@@ -497,6 +507,83 @@
         <li>Policy evaluation (40 Hz) and PD tracking (2000 Hz).</li>
         <li></li>
     </ul>
+</section>
+<section id="slide-cassie-gait-video" class="center">
+    <video controls>
+        <source src="./videos/cassie_gait.mp4"
+                type="video/webm">
+    </video>
+</section>
+
+<section id="slide-cassie-step-policy" class="center">
+    <h4>Cassie: Footstep-Constrained Walking  - Policy</h4>
+    <div class="leftcol">
+        <ul>
+            <li>Input: 
+                <ul>
+                    <li>rotational velocity and orientation of the base; robot state $\hat q, \hat{\dot q}$</li>
+                    <li>clock inputs $p=\{\sin(2\pi(\phi+\theta_{left})), \sin(2\pi(\phi+\theta_{right}))\}$</li>
+                    <li>swing-to-stance ratio $r$ and turn rate input </li>
+                    <li>desired footstep constraint $U=(L_{step}, \theta_{step})$</li>
+                </ul>
+            </li>
+            <li>Output: 10 desired joint positions</li>
+            <li>Architecture: LSTM with 2 recurrent hidden layers of size 128 each and a simple linear output projection of size 30.</li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_step_architecture.png">
+    </div>
+</section>
+<section id="slide-cassie-step-reward" class="center">
+    <h4>Cassie: Footstep-Constrained Walking  - Reward</h4>
+    <div class="leftcol">
+        <ul>
+            <li>Reward at two time scales:
+                <ul>
+                    <li>locomotion: at every decision circle
+                        $$
+                            r_{pelvis}=100(\Delta d^i-\Delta d^{i-1})
+                        $$
+                    </li>
+                    <li>footstep-constraint: only at touchdown moment
+                        $$
+                            r_{step}=\exp(-2f),
+                        $$
+                        where $f$ is the Euclidean distance between the actual and target footstep locations.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_step_reward.png">
+        <img src="./figures/cassie_step_reach.png">
+    </div>
+</section>
+
+<section id="slide-cassie-load-policy" class="center">
+    <h4>Cassie: Footstep-Constrained Walking  - Reward</h4>
+    <div class="leftcol">
+        <ul>
+            <li></li>
+        </ul>
+    </div>
+    <div class="rightcol">
+
+    </div>
+</section>
+<section id="slide-cassie-step-video" class="center">
+    <video controls>
+        <source src="./videos/cassie_step.mp4"
+                type="video/webm">
+    </video>
+</section>
+<section id="slide-cassie-load-video" class="center">
+    <video controls>
+        <source src="./videos/cassie_load.mp4"
+                type="video/webm">
+    </video>
 </section>
 <!--Conclusion-->
 <section id="slide-conclusion" class="center">
@@ -522,6 +609,9 @@
 		<li><a id="Zhao2020">[Zhao2020]</a> <a name="Zhao2020"></a>Zhao, Wenshuai, Jorge Peña Queralta, and Tomi Westerlund. "Sim-to-real transfer in deep reinforcement learning for robotics: a survey." 2020 IEEE Symposium Series on Computational Intelligence (SSCI). IEEE, 2020.</li>
 		<li><a id="Peng2017">[Peng2017]</a> <a name="Peng2017"></a>Peng, Xue Bin, and Michiel van de Panne. "Learning locomotion skills using deeprl: Does the choice of action space matter?." Proceedings of the ACM SIGGRAPH/Eurographics Symposium on Computer Animation. 2017.</li>
         <li><a id="Lee2020">[Lee2020]</a> <a name="Lee2020"></a>Lee, Joonho, et al. "Learning quadrupedal locomotion over challenging terrain." Science robotics 5.47 (2020): eabc5986</li>
+        <li><a id="Hurst2021">[Hurst2021]</a> <a name="Hurst2021"></a>Siekmann, Jonah, et al. "Sim-to-real learning of all common bipedal gaits via periodic reward composition." 2021 IEEE International Conference on Robotics and Automation (ICRA). IEEE, 2021</li>
+        <li><a id="Duan2022">[Duan2022]</a> <a name="Hurst2021"></a>Duan, Helei, et al. "Sim-to-Real Learning of Footstep-Constrained Bipedal Dynamic Walking." arXiv preprint arXiv:2203.07589 (2022)</li>
+        <li><a id="Dao2022">[Dao2022]</a> <a name="Dao2022"></a>J. Dao, K. Green, H. Duan, A. Fern and J. Hurst, "Sim-to-Real Learning for Bipedal Locomotion Under Unsensed Dynamic Loads," 2022 International Conference on Robotics and Automation (ICRA), 2022, pp. 10449-10455</li>
 	</ul>
 	<div class="slide-footer"><br></div>
 </section>
