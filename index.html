@@ -59,8 +59,8 @@
 	<div id="text-table-of-contents">
 	<ul>
 		<li><a href="#slide-intro">Introduction</a></li>
-		<li><a href="#slide-anymal">Case study: Anymal</a></li>
-		<li><a href="#slide-cassie">Case study: Cassie</a></li>
+		<li><a href="#slide-anymal-traditional">Case study: Anymal</a></li>
+		<li><a href="#slide-cassie-traditional">Case study: Cassie</a></li>
 		<li><a href="#slide-conclusion">Conclusion</a></li>
 	</ul>
 	</div>
@@ -125,7 +125,7 @@
     <div class="leftcol" style="margin-top: 0%;">
         <ul style="font-size:35px;">
             <li>Goal: commanded velocity tracking and recovery from a fall.</li>
-            <li>Modelling: rigid-body dynamics algorithms + contact solver + collision-detection library + <strong><em style="color:var(--myred);">actuator dynamics</em></strong>
+            <li>Modelling<a class="org-ref-reference" href="#slide-bibliography">[Raisim]</a>: rigid-body dynamics algorithms $O(n)$ + collision-detection library $O(n^2)$ + contact solver ($O(n)$ if not coupled) + <strong><em style="color:var(--myred);">actuator dynamics</em></strong>
             <li>Challenge: motors (SEAs) are hard to model.
             </li>
         </ul>
@@ -201,13 +201,13 @@
 			</li>
 			<li>Actuation model:
 				<ul>
-					<li>target joint angles with given $k_p$ and $k_d$;</li>
-					<li>target joint velocities with given $k_d$;</li>
-					<li>torques;</li>
+					<li><strong><em style="color:var(--myred);">target joint angles</em></strong> with given $k_p$ and $k_d$;</li>
+					<li><strong><em style="color:var(--myred);">target joint velocities</em></strong> with given $k_d$;</li>
+					<li><strong><em style="color:var(--myred);">torques</em></strong>;</li>
 					<li>muscle activations.</li>
 				</ul>
 			</li>
-			<li>A PD controller can outperform a torque controller in both training speed and final control performance.</li>
+			<li>A PD controller can outperform a torque controller in both <strong><em style="color:var(--myred);">training speed</em></strong> and <strong><em style="color:var(--myred);">final control performance</em></strong>.</li>
 			<li>Explanation:
 				<ul>
                     <li>Smoother learning curve.</li>
@@ -229,16 +229,16 @@
             </li>
             <li>Curriculum: avoid trapping in a local minimum of penalty on joint torque and velocity<br>
                 <ul>
-                    <li>all of cost terms except those related to the objective (base velocity error cost etc.) are multiplied by a curriculum factor $k_c$, where $k_{c, j+1}\leftarrow (k_{c, j})^{k_d}$ and $k_0, k_d\in (0, 1)$ are selected to prevent the initial tendency to stand still.</li>
+                    <li>all of cost terms except those related to the objective (base velocity error cost etc.) are <strong><em style="color:var(--myred);">multiplied by a curriculum factor $k_c$</em></strong>, where $k_{c, j+1}\leftarrow (k_{c, j})^{k_d}$ and $k_0, k_d\in (0, 1)$ are selected to prevent the initial tendency to stand still.</li>
                 </ul>
             </li>
             <li>The discount factor $\gamma$ is hand-tuned.</li>
-            <li>Joint velocities, base velocities: uniformly distributed noise injection</li>
+            <li>Joint velocities, base velocities: uniformly distributed <strong><em style="color:var(--myred);">noise injection</em></strong></li>
             <li>Training time: 9 days of simulated time for command-conditioned locomotion; 79 days for recovery from a fall.</li>
         </ul>
     </div>
     <div class="leftcol" style="margin-top: 0%;">
-        <img src="./figures/anymal_motor.png">
+        <img src="./figures/anymal_motor_tracking.png">
     </div>
 </section>
 <section id="slide-anymal-reward" class="center">
@@ -274,9 +274,9 @@
 	<h4 id="h4_anymal">Anymal: Deployment</h4>
     <div class="leftcol" style="margin-top: 0%;">
         <ul style="font-size:35px;">
-            <li>Inference takes 25$\mu$s on a single CPU thread, less than 0.25% of the available onboard computational resources.</li>
+            <li>Inference takes 25$\mu$s <strong><em style="color:var(--myred);">on a single CPU thread</em></strong> (Intel i7-5600U, 2.6–3.2GHz, dual-core 64-bit, Tensorflow C++ API is used), less than 0.25% of the available onboard computational resources.</li>
             <li>The policy network is evaluated at 200Hz for command-conditioned locomotion and at 100 Hz for recovery from a fall.</li>
-            <li>The performance is insensative to the control rate: performance is identical for recovery when the control rate increases from 20 Hz to 100 Hz. (Possibly due to the low joint velocities mostly below 6 rad/s)
+            <li>The performance is <strong><em style="color:var(--myred);">insensative to the control rate</em></strong>: performance is identical for recovery when the control rate increases from 20 Hz to 100 Hz. (Possibly due to the low joint velocities mostly below 6 rad/s)
             </li>
         </ul>
     </div>
@@ -294,28 +294,33 @@
 <!--Anymal locomotion on challenging terrains-->
 <section id="anymal-locomotion" class="center">
     <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain<a class="org-ref-reference" href="#slide-bibliography">[Lee2020]</a></h4>
-    <ul>
-        <li>Goal: follow a command (direction) and locomote over rough terrain with only proprioceptive measurements (joint encoders and an IMU).
-        </li>
-        <li>Challenge: the robustness of the controller.</li>
-    </ul>
+    <div class="leftcol">
+        <ul>
+            <li>Goal: follow a command (<strong><em style="color:var(--myred);">direction</em></strong>) and locomote over rough terrain with <strong><em style="color:var(--myred);">only proprioceptive measurements</em></strong> (joint encoders and an IMU).
+            </li>
+            <li>Challenge: the robustness of the controller.</li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/anymal_loco_challenge.png">
+    </div>
 </section>
 <section id="anymal-locomotion-policy-teacher" class="center">
     <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
     <div class="leftcol">
         <ul style="font-size:35px;">
             <li>Privileged learning</li>
-            <li>teacher policy (access to ground-truth knowledge)
+            <li><strong><em style="color:var(--myred);">teacher policy</em></strong> (access to ground-truth knowledge)
                 <ul>
                     <li>state $s_t=(o_t, x_t)$</li>
-                    <li>$o_t$ inclues command, orientation, base twist, joint positions and velocities, periodic phase $\phi_i$, frequency offset $f_i$ of each leg, previous foot position targets, joint position errors and velocities at $t-0.01$ aand $t-0.02$ s.</li>
+                    <li>$o_t$ includes command, orientation, base twist, joint positions and velocities, periodic phase $\phi_i$, frequency offset $f_i$ of each leg, previous foot position targets, joint position errors and velocities at $t-0.01$ and $t-0.02$ s.</li>
                     <li>$x_t$ contains noiseless information from the physics engine, mainly related to foot-ground interactions, such as terrain profile (9 points placed along a 10-cm radius circle), foot contact state and forces, friction coefficients, external disturbance forces.</li>
                 </ul>
             </li>
         </ul>
     </div>
     <div class="r-stack">
-        <img src="./figures/anymal_loco_architecture.png">
+        <img src="./figures/anymal_loco_architecture.jpg">
     </div>
 </section>
 <section id="anymal-locomotion-policy-teacher2" class="center">
@@ -325,7 +330,14 @@
             <li>Privileged learning</li>
             <li>teacher policy (access to ground-truth knowledge)
                 <ul>
-                    <li>action: 16-dim vector (leg frequencies and foot position residuals)</li>
+                    <li>action: <strong><em style="color:var(--myred);">16-dim vector (leg frequencies $f_i$ and foot position residuals $\Delta r_{fi, T}$)</em></strong>
+                        <ul>
+                            <li>$\phi_i=\phi_{i,0}+(f_0+f_i)t$: contact phase if $\phi\in[0, \pi)$ and swing phase if $\phi\in[\pi, 2\pi)$, where $f_0=1.25$ Hz.</li>
+                            <li>foot trajectory generator: $F(\phi):[0, 2\pi)\rightarrow \mathbb{R}^3$</li>
+                            <li>target foot position $F(\phi_i)+\Delta r_{fi,T}$</li>
+                            <li>tracking: <strong><em style="color:var(--myred);">analytic IK and PD controller</em></strong></li>
+                        </ul>
+                    </li>
                     <li>architecture: MLP encoder with input $x_t$ and MLP for computing action</li>
                     <li>Learning algorithm: TRPO</li>
                 </ul>
@@ -333,7 +345,7 @@
         </ul>
     </div>
     <div class="r-stack">
-        <img src="./figures/anymal_loco_architecture.png">
+        <img src="./figures/anymal_loco_architecture.jpg">
     </div>
 </section>
 <section id="anymal-locomotion-policy-student" class="center">
@@ -341,49 +353,68 @@
     <div class="leftcol">
         <ul style="font-size:35px;">
             <li>Privileged learning</li>
-            <li>student policy (only uses sensors avaliable on the real robot; imitates the teacher)
+            <li>student policy (only uses <strong><em style="color:var(--myred);">sensors avaliable on the real robot</em></strong>; <strong><em style="color:var(--myred);">imitates the teacher</em></strong>)
                 <ul>
                     <li>state $s_t=(o_t)$</li>
                     <li>architecture: a temporal convolutional network (TCN) encoder and an MLP for computing action</li>
                     <li>Learning algorithm: supervised learning with a loss function
                         $$
                             \begin{aligned}
-                            L=&(\bar a_t(o_t, x_t)-a_t(o_t, H))^2+\\
-                            &(\bar l_t(o_t,x_t)-l_t(H))^2,
+                            L=&{\color{var(--myred)}(\bar a_t(o_t, x_t)-a_t(o_t, H))^2}+\\
+                            &{\color{var(--myblue)}(\bar l_t(o_t,x_t)-l_t(H))^2},
                             \end{aligned}
                         $$
-                        where $H=\{h_{t-1},\cdots,h_{t-N-1}\}$ and $h_t=o_t\setminus\{f_o, \textrm{joint history, previous foot position targets}\}$ is a time series of proprioceptive observations.
+                        where $H=\{h_{t-1},\cdots,h_{t-N-1}\}$ and $h_t=o_t\setminus\{f_0, \textrm{joint history, previous foot position targets}\}$ is a time series of proprioceptive observations.
                     </li>
                 </ul>
             </li>
         </ul>
     </div>
     <div class="r-stack">
-        <img src="./figures/anymal_loco_architecture.png">
+        <img src="./figures/anymal_loco_architecture.jpg">
     </div>
 </section>
 <section id="anymal-locomotion-curriculum" class="center">
     <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
-    <ul>
-        <li>Adaptive terrain curriculum</li>
-    </ul>
+    <div class="leftcol">
+        <ul>
+            <li><strong><em style="color:var(--myred);">Adaptive terrain curriculum</em></strong>
+                <ul>
+                    <li>The terrain is generated by a vector $c_T$.</li>
+                    <li>Evaluate by the traversability of generated terrains
+                        $$
+                            \begin{aligned}
+                            &v(s_t, a_t, s_{t+1})=1, \textrm{if}\ v_{pr}(s_{t+1})>0.2,\\
+                            &Tr(c_T,\pi)=\mathbb{E}_{\xi\sim\pi}\{v(s_t,a_t,s_{t+1}|c_T\}\in[0, 1],\\
+                            &Td(c_T,\pi)\triangleq \textrm{Pr}(Tr(c_T,\pi)\in[0.5, 0.9])
+                            \end{aligned}
+                        $$
+                    </li>
+                    <li>Sequential importance resampling particle filter</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/anymal_loco_architecture.jpg">
+    </div>
 </section>
-<section id="anymal-locomotion" class="center">
-    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Training</h4>
-    <ul>
-        <li>Goal:</li>
-    </ul>
+<section id="anymal-locomotion-policy-performance" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Policy</h4>
+    <div class="r-stack">
+        <img src="./figures/anymal_loco_policy.jpg">
+    </div>
 </section>
-<section id="anymal-locomotion" class="center">
-    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Reward Setting</h4>
+<section id="anymal-locomotion-reward" class="center">
+    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Reward Setting and Training</h4>
     <ul>
-        <li>Goal:</li>
-    </ul>
-</section>
-<section id="anymal-locomotion" class="center">
-    <h4 id="h4_anymal">Anymal - Learning Locomotion over Challenging Terrain: Deployment</h4>
-    <ul>
-        <li>Training environment features only rigid terrain, while the controller successfully meet the dversity of field conditions.</li>
+        <li>Linear velocity; angular velocity; base motion; foot clearance; body collision; smoothness of target foot positions; torque penalty
+            $$
+                0.05r_{lv}+0.05r_{av}+0.04r_b+0.01r_{fc}+0.02r_{bc}+0.025r_s+2\cdot 10^{-5}r_\tau,
+            $$
+        </li>
+        <li>Training: <strong><em style="color:var(--myred);">12 hours for teacher policy</em></strong> and <strong><em style="color:var(--myblue);">4 hours for student policy</em></strong> (i7-8700K CPU and RTX 2080 GPU)</li>
+        <li>Training environment features only <strong><em style="color:var(--myred);">rigid terrain</em></strong>, while the controller successfully meet the <strong><em style="color:var(--myblue);">diversity of field conditions</em></strong>.</li>
     </ul>
 </section>
 <section id="slide-anymal_locomotion-video" class="center">
@@ -392,28 +423,42 @@
                 type="video/webm">
     </video>
 </section>
-<!--Cassie-->
-<section id="cassie-traditional" class="center">
-    <h4>Bipedal Locomotion: Traditional Controller Design</h4>
 
+<section id="cheetah-locomotion-reward" class="center">
+    <h4 id="h4_cheetah">Mini Cheetah</h4>
+    <div class="r-stack">
+        <img src="./figures/cheetah_reward.png">
+    </div>
 </section>
-<section id="cassie-gait-learning" class="center">
-    <h4>Cassie: Bipedal Gait Learning</h4>
-    <ul>
-        <li>Goal: learn all common gaits.</li>
-        <li>Challenge: the reward function is hard to design
-            <ul>
-                <li>track trajectory motion: deriving feasible reference trajectories is hard</li>
-                <li>reference-free reward: inefficient, infeasible or unsafe policies.</li>
-            </ul>
-        </li>
-    </ul>
+<section id="slide-anymal_locomotion-video" class="center">
+    <video controls>
+        <source src="./videos/cheetah.mp4"
+                type="video/webm">
+    </video>
 </section>
-<section id="cassie-periodic-gait" class="center">
+<!--Cassie-->
+<section id="slide-cassie-gait-learning" class="center">
     <h4>Cassie: Bipedal Gait Learning</h4>
     <div class="leftcol">
-        <ul style="font-size:30px;">
-            <li>Gait: a sequence of periodic swing phases and stance phases.</li>
+        <ul>
+            <li>Goal: <strong><em style="color:var(--myred);">learn all common gaits</em></strong>.</li>
+            <li>Challenge: the reward function is hard to design
+                <ul>
+                    <li><strong><em style="color:var(--myblue);">track trajectory motion</em></strong>: deriving feasible reference trajectories is hard</li>
+                    <li><strong><em style="color:var(--myblue);">reference-free reward</em></strong>: inefficient, infeasible or unsafe policies.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_robot.png">
+    </div>
+</section>
+<section id="slide-cassie-periodic-gait" class="center">
+    <h4>Cassie: Bipedal Gait Learning</h4>
+    <div class="leftcol">
+        <ul style="font-size:28px;">
+            <li>Gait: a sequence of periodic <strong><em style="color:var(--myblue);">swing phases</em></strong> and <strong><em style="color:var(--myblue);">stance phases</em></strong>.</li>
             <li>Bahavior reward: biased sum of $n$ reward components
                 $$
                     \begin{aligned}
@@ -439,7 +484,7 @@
         <img src="./figures/cassie_gait_circle.png">
     </div>
 </section>
-<section id="cassie-periodic-reward" class="center">
+<section id="slide-cassie-periodic-reward" class="center">
     <h4>Cassie: Bipedal Gait Learning</h4>
     <div class="leftcol">
         <ul style="font-size:30px;">
@@ -451,7 +496,7 @@
                     \end{aligned}
                 $$
             </li>
-            <li>Reward: bipedal bahavior, smooth terms and penalization of control inputs
+            <li>Reward: <strong><em style="color:var(--myblue);">bipedal bahavior, smooth terms and penalization of control inputs</em></strong>
                 $$
                     \mathbb{E}[R(s,\phi)]=\mathbb{E}[R_{bipedal}(s,\phi)]+R_{smooth}(s)+R_{cmd}(s)
                 $$
@@ -469,6 +514,32 @@
         <img src="./figures/cassie_gait_reward.png">
     </div>
 </section>
+<section id="slide-cassie-periodic-reward2" class="center">
+    <h4>Cassie: Bipedal Gait Learning</h4>
+    <div class="leftcol">
+        <ul style="font-size:30px;">
+            <li>Keep the cycle offsets fixed and vary the phase ratio: transition from walking to running and hopping with more or less time in the air.
+            </li>
+            <li>Vary both the cycle offsets and the phase ratio: introduce additional reward (behavior-specific transition penalities).
+                <ul>
+                    <li>Hopping: commanded when cycle offsets are very close; cost for constraining the feet positions to be close
+                        $$
+                            q_{hop\ sym}(s)=1-\exp(-err_{sym}\exp(-5|\sin(2\pi(\theta_{left}-\theta_{right})|)).
+                        $$
+                    </li>
+                    <li>
+                        $$
+                            q_{standing\ cost}(s)=1-\exp(-(err_{sym}+20q_{action\ diff}(s))).
+                        $$
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="rightcol">
+        <img src="./figures/cassie_reward.png">
+    </div>
+</section>
 <section id="slide-cassie-policy" class="center">
     <h4>Cassie: Policy</h4>
     <div class="leftcol">
@@ -480,7 +551,7 @@
                     <li>phase ratios and clock inputs $r, p=\{\sin(2\pi(\phi+\theta_{left})), \sin(2\pi(\phi+\theta_{right}))\}$</li>
                 </ul>
             </li>
-            <li>Output: 10 desired joint positions and 10 sets of PD gains</li>
+            <li>Output: <strong><em style="color:var(--myblue);">10 desired joint positions</em></strong> and <strong><em style="color:var(--myblue);">10 sets of PD gains</em></strong></li>
             <li>Architecture: LSTM with 2 recurrent hidden layers of size 128 each and a simple linear output projection of size 30.</li>
         </ul>
     </div>
@@ -489,24 +560,18 @@
     </div>
 </section>
 <section id="slide-cassie-train" class="center">
-    <h4>Cassie: Training</h4>
+    <h4>Cassie: Training and Deployment</h4>
     <div class="leftcol">
         <ul>
             <li>Dynamics randomization.</li>
             <li>Learning algorithm: PPO</li>
-            <li>Simulator: cassie-mujoco-sim base on MuJoCo</li>
+            <li>Simulator: cassie-mujoco-sim based on MuJoCo</li>
+            <li>Policy evaluation (40 Hz) and PD tracking (2000 Hz).</li>
         </ul>
     </div>
     <div class="rightcol">
         <img src="./figures/cassie_randomization.png">
     </div>
-</section>
-<section id="slide-cassie-deployment" class="center">
-    <h4>Cassie: Deployment</h4>
-    <ul>
-        <li>Policy evaluation (40 Hz) and PD tracking (2000 Hz).</li>
-        <li></li>
-    </ul>
 </section>
 <section id="slide-cassie-gait-video" class="center">
     <video controls>
@@ -524,7 +589,7 @@
                     <li>rotational velocity and orientation of the base; robot state $\hat q, \hat{\dot q}$</li>
                     <li>clock inputs $p=\{\sin(2\pi(\phi+\theta_{left})), \sin(2\pi(\phi+\theta_{right}))\}$</li>
                     <li>swing-to-stance ratio $r$ and turn rate input </li>
-                    <li>desired footstep constraint $U=(L_{step}, \theta_{step})$</li>
+                    <li><strong><em style="color:var(--myblue);">desired footstep constraint</em></strong> $U=(L_{step}, \theta_{step})$</li>
                 </ul>
             </li>
             <li>Output: 10 desired joint positions</li>
@@ -541,12 +606,12 @@
         <ul>
             <li>Reward at two time scales:
                 <ul>
-                    <li>locomotion: at every decision circle
+                    <li>locomotion: <strong><em style="color:var(--myred);">at every decision circle</em></strong>
                         $$
                             r_{pelvis}=100(\Delta d^i-\Delta d^{i-1})
                         $$
                     </li>
-                    <li>footstep-constraint: only at touchdown moment
+                    <li>footstep-constraint: <strong><em style="color:var(--myblue);">only at touchdown moment</em></strong>
                         $$
                             r_{step}=\exp(-2f),
                         $$
@@ -562,17 +627,6 @@
     </div>
 </section>
 
-<section id="slide-cassie-load-policy" class="center">
-    <h4>Cassie: Footstep-Constrained Walking  - Reward</h4>
-    <div class="leftcol">
-        <ul>
-            <li></li>
-        </ul>
-    </div>
-    <div class="rightcol">
-
-    </div>
-</section>
 <section id="slide-cassie-step-video" class="center">
     <video controls>
         <source src="./videos/cassie_step.mp4"
@@ -590,9 +644,26 @@
 	<h2 id="h2_conclusion" hidden>Conclusion</h2>
 	<h3 id="h3_conclusion" hidden>Conclusion</h3>
 	<h4 id="conclusion">CONCLUSION</h4>
-	<ul>
-		<li></li>
-	</ul>
+	<ul style="font-size:40px;">
+        <li><strong><em style="color:var(--myred);">Reward function</em></strong>.<br>
+            Characterization without loss of generality: exploitation of periodicity
+        </li>
+        <li><strong><em style="color:var(--myred);">Input and output</em></strong>.<br>
+            Task space or joint space; position, velocity or torque command?
+        </li>
+        <li><strong><em style="color:var(--myred);">Modelling</em></strong>.<br>
+            simuation fidelity (neural networks for motors); dynamics randomization; manual noise injection
+        </li>
+        <li><strong><em style="color:var(--myred);">Training</em></strong>.<br>
+            curriculum (naive version or adaptive version); teacher and student; parallel differentiable simulation <a class="org-ref-reference" href="#slide-bibliography">[Rudin2021, Margolis2022]</a>
+        </li>
+        <li><strong><em style="color:var(--myred);">Learning algorithm</em></strong>.<br>
+            PPO etc.
+        </li>
+        <li><strong><em style="color:var(--myred);">Network design</em></strong>.<br>
+
+        </li>
+    </ul>
 	<div class="slide-footer"><br></div>
 </section>
 
@@ -610,8 +681,12 @@
 		<li><a id="Peng2017">[Peng2017]</a> <a name="Peng2017"></a>Peng, Xue Bin, and Michiel van de Panne. "Learning locomotion skills using deeprl: Does the choice of action space matter?." Proceedings of the ACM SIGGRAPH/Eurographics Symposium on Computer Animation. 2017.</li>
         <li><a id="Lee2020">[Lee2020]</a> <a name="Lee2020"></a>Lee, Joonho, et al. "Learning quadrupedal locomotion over challenging terrain." Science robotics 5.47 (2020): eabc5986</li>
         <li><a id="Hurst2021">[Hurst2021]</a> <a name="Hurst2021"></a>Siekmann, Jonah, et al. "Sim-to-real learning of all common bipedal gaits via periodic reward composition." 2021 IEEE International Conference on Robotics and Automation (ICRA). IEEE, 2021</li>
-        <li><a id="Duan2022">[Duan2022]</a> <a name="Hurst2021"></a>Duan, Helei, et al. "Sim-to-Real Learning of Footstep-Constrained Bipedal Dynamic Walking." arXiv preprint arXiv:2203.07589 (2022)</li>
+        <li><a id="Duan2022">[Duan2022]</a> <a name="Duan2022"></a>Duan, Helei, et al. "Sim-to-Real Learning of Footstep-Constrained Bipedal Dynamic Walking." arXiv preprint arXiv:2203.07589 (2022)</li>
         <li><a id="Dao2022">[Dao2022]</a> <a name="Dao2022"></a>J. Dao, K. Green, H. Duan, A. Fern and J. Hurst, "Sim-to-Real Learning for Bipedal Locomotion Under Unsensed Dynamic Loads," 2022 International Conference on Robotics and Automation (ICRA), 2022, pp. 10449-10455</li>
+        <li><a id="Raisim">[Raisim]</a> <a name="Raisim"></a>https://raisim.com/sections/Performance.html</li>
+        <li><a id="Rudin2021">[Rudin2021]</a> <a name="Rudin2021"></a>Nikita Rudin, David Hoeller, Philipp Reist, and Marco Hutter. Learning to walk in minutes using massively parallel deep reinforcement learning. In Proc. Conf. Robot Learn. (CoRL), pages 91–100, London, UK, November 2021</li>
+        <li><a id="Margolis2022">[Margolis2022]</a> <a name="Margolis2022"></a>Margolis, Gabriel B., et al. "Rapid Locomotion via Reinforcement Learning." arXiv preprint arXiv:2205.02824 (2022)</li>
+        <li></li>
 	</ul>
 	<div class="slide-footer"><br></div>
 </section>
